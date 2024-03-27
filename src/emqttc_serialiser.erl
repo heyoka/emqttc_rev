@@ -131,6 +131,8 @@ serialise_variable(?DISCONNECT, undefined, undefined) ->
 
 serialise_payload(undefined) ->
     undefined;
+serialise_payload([Bin]) when is_binary(Bin) ->
+    Bin;
 serialise_payload(Bin) when is_binary(Bin) ->
     Bin.
 
