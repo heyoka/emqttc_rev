@@ -134,7 +134,9 @@ serialise_payload(undefined) ->
 serialise_payload([Bin]) when is_binary(Bin) ->
     Bin;
 serialise_payload(Bin) when is_binary(Bin) ->
-    Bin.
+    Bin;
+serialise_payload(_Other) ->
+  undefined.
 
 serialise_topics([{_Topic, _Qos}|_] = Topics) ->
     << <<(serialise_utf(Topic))/binary, ?RESERVED:6, Qos:2>> || {Topic, Qos} <- Topics >>;
