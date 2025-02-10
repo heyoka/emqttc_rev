@@ -32,7 +32,7 @@
 -include("emqttc_packet.hrl").
 
 %% API
--export([serialise/1]).
+-export([serialise/1, serialise_payload/1]).
 
 
 serialise(#mqtt_packet{header = Header = #mqtt_packet_header{type = Type},
@@ -130,12 +130,14 @@ serialise_variable(?DISCONNECT, undefined, undefined) ->
     {<<>>, <<>>}.
 
 serialise_payload(undefined) ->
+  lager:notice("cannot serialize payload from undefined"),
     undefined;
 serialise_payload([Bin]) when is_binary(Bin) ->
     Bin;
 serialise_payload(Bin) when is_binary(Bin) ->
     Bin;
 serialise_payload(_Other) ->
+  lager:notice("cannot serialize payload from ~p",[_Other]),
   undefined.
 
 serialise_topics([{_Topic, _Qos}|_] = Topics) ->
