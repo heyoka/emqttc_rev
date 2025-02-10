@@ -130,14 +130,17 @@ serialise_variable(?DISCONNECT, undefined, undefined) ->
     {<<>>, <<>>}.
 
 serialise_payload(undefined) ->
-%%  lager:notice("cannot serialize payload from undefined"),
     undefined;
 serialise_payload([Bin]) when is_binary(Bin) ->
     Bin;
 serialise_payload(Bin) when is_binary(Bin) ->
     Bin;
+serialise_payload(IoList) when is_list(IoList) ->
+  case catch(iolist_to_binary(IoList)) of
+    Bin when is_binary(Bin) -> Bin;
+    _ -> undefined
+  end;
 serialise_payload(_Other) ->
-%%  lager:notice("cannot serialize payload from ~p",[_Other]),
   undefined.
 
 serialise_topics([{_Topic, _Qos}|_] = Topics) ->
