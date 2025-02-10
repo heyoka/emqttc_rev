@@ -313,9 +313,15 @@ received({'UNSUBACK', _PacketId}, State) ->
 send(Packet, State = #proto_state{socket = Socket}) ->
     LogTag = logtag(State),
     ?debug("[~s] SENT: ~s", [LogTag, emqttc_packet:dump(Packet)]),
-    Data = emqttc_serialiser:serialise(Packet),
-    ?debug("[~s] SENT: ~p", [LogTag, Data]),
-    emqttc_socket:send(Socket, Data),
+  case catch emqttc_serialiser:serialise(Packet) of
+    Data when is_binary(Data) ->
+      ?debug("[~s] SENT: ~p", [LogTag, Data]),
+      emqttc_socket:send(Socket, Data);
+    Other ->
+      lager:notice("Error serializing data ~p -[~s] SENT: ~s", [Other, LogTag, emqttc_packet:dump(Packet)])
+  end,
+%%    Data = emqttc_serialiser:serialise(Packet),
+
     {ok, State}.
 
 next_packet_id(State = #proto_state{packet_id = 16#ffff}) ->
